@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bibliothèque Musicaa</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .library-container {
+            display: flex;
+            min-height: 100vh;
+            background: var(--dark-bg);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-content {
+            padding: 0 1.5rem;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .sidebar-section-title {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(29, 185, 84, 0.1);
+            color: var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background: rgba(29, 185, 84, 0.2);
+            color: var(--primary-color);
+        }
+
+        .sidebar-item span:first-child {
+            font-size: 1.2rem;
+        }
+
+        .sidebar-user {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(29, 185, 84, 0.1);
+            border-radius: 0.7rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+        }
+
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff3b30;
+            border: 1px solid #ff3b30;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #ff3b30;
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .library-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 2.7rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(29, 185, 84, 0.2);
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-bar::before {
+            content: '🔍';\n            position: absolute;\n            left: 1rem;\n            top: 50%;\n            transform: translateY(-50%);\n            font-size: 1rem;\n        }
+
+        .filter-genres {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;\n            padding-bottom: 1rem;\n            margin-bottom: 1.5rem;
+        }
+
+        .genre-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--card-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .genre-btn:hover,
+        .genre-btn.active {
+            background: var(--primary-color);
+            color: black;
+            border-color: var(--primary-color);
+        }
+
+        .songs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .song-item {
+            background: var(--card-bg);
+            border-radius: 0.9rem;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .song-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(29, 185, 84, 0.2);
+        }
+
+        .song-cover {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary-color), #1aa34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .song-cover::after {
+            content: '';\n            position: absolute;\n            inset: 0;\n            background: rgba(0, 0, 0, 0);\n            display: flex;\n            align-items: center;\n            justify-content: center;\n        }
+
+        .song-item:hover .song-cover {
+            background: linear-gradient(135deg, var(--primary-color), #1aa34a);
+        }
+
+        .song-item:hover .play-overlay {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .play-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .play-overlay:hover .play-icon {
+            transform: scale(1.1);
+        }
+
+        .song-info {
+            padding: 1.2rem;
+        }
+
+        .song-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-artist {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .song-duration {
+            background: rgba(29, 185, 84, 0.1);
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.3rem;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn:hover,
+        .favorite-btn.active {
+            transform: scale(1.2);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.7rem 1rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .pagination button.active {
+            background: var(--primary-color);
+            color: black;
+            border-color: var(--primary-color);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .no-results span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        /* Player Mini */
+        .player-mini {
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            max-height: 80px;
+        }
+
+        .player-mini.active {
+            animation: slideUp 0.3s ease;
+        }
+
+        .player-mini-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .player-mini-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-mini-artist {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-mini-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .player-mini-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .player-mini-btn:hover {
+            color: var(--primary-color);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+            }
+
+            .player-mini {
+                left: 200px;
+            }
+
+            .songs-container {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 1rem;
+                z-index: 1000;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: 200px;
+                padding: 1rem;
+            }
+
+            .library-header {
+                flex-direction: column;
+            }
+
+            .library-header h1 {
+                font-size: 2rem;
+            }
+
+            .search-bar {
+                min-width: 100%;
+            }
+
+            .songs-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .player-mini {
+                left: 0;
+                flex-wrap: wrap;
+                padding: 1rem;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .songs-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .song-cover {
+                height: 120px;
+                font-size: 2rem;
+            }
+
+            .song-info {
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="library-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <span>♪</span>
+                    <span>Musicaa</span>
+                </div>
+
+                <div class="sidebar-section-title">Menu</div>
+                <div class="sidebar-item active" onclick="setActiveTab('all')">
+                    <span>🎵</span>
+                    <span>Toutes les Musiques</span>
+                </div>
+                <div class="sidebar-item" onclick="setActiveTab('favorites')">
+                    <span>❤️</span>
+                    <span>Favoris</span>
+                </div>
+
+                <div class="sidebar-section-title">Genres</div>
+                <div class="sidebar-item" onclick="filterByGenre('Pop')">
+                    <span>🎤</span>
+                    <span>Pop</span>
+                </div>
+                <div class="sidebar-item" onclick="filterByGenre('Rock')">
+                    <span>🎸</span>
+                    <span>Rock</span>
+                </div>
+                <div class="sidebar-item" onclick="filterByGenre('Hip-Hop')">
+                    <span>🎤</span>
+                    <span>Hip-Hop</span>
+                </div>
+                <div class="sidebar-item" onclick="filterByGenre('Jazz')">
+                    <span>🎷</span>
+                    <span>Jazz</span>
+                </div>
+                <div class="sidebar-item" onclick="filterByGenre('Classique')">
+                    <span>🎻</span>
+                    <span>Classique</span>
+                </div>
+                <div class="sidebar-item" onclick="filterByGenre('Électronique')">
+                    <span>🎹</span>
+                    <span>Électronique</span>
+                </div>
+
+                <div class="sidebar-user">
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">Utilisateur</div>
+                            <div class="user-email" id="userEmail">email@example.com</div>
+                        </div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Déconnexion</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="library-header">
+                <h1>📚 Bibliothèque Musicale</h1>
+                <div class="search-bar">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Rechercher une chanson, un artiste..."
+                        oninput="searchSongs()"
+                    >
+                </div>
+            </div>
+
+            <div class="filter-genres">
+                <button class="genre-btn active" onclick="filterByGenre('all'); this.classList.add('active');">Tous</button>
+                <button class="genre-btn" onclick="filterByGenre('Pop')">Pop</button>
+                <button class="genre-btn" onclick="filterByGenre('Rock')">Rock</button>
+                <button class="genre-btn" onclick="filterByGenre('Hip-Hop')">Hip-Hop</button>
+                <button class="genre-btn" onclick="filterByGenre('Jazz')">Jazz</button>
+                <button class="genre-btn" onclick="filterByGenre('Classique')">Classique</button>
+                <button class="genre-btn" onclick="filterByGenre('Électronique')">Électronique</button>
+            </div>
+
+            <div id="songsContainer" class="songs-container"></div>
+
+            <div class="pagination" id="pagination"></div>
+        </main>
+    </div>
+
+    <!-- Player Mini -->
+    <div class="player-mini" id="playerMini">
+        <div class="player-mini-info">
+            <div class="player-mini-title" id="playerMiniTitle">Sélectionnez une chanson</div>
+            <div class="player-mini-artist" id="playerMiniArtist">Musicaa</div>
+        </div>
+        <div class="player-mini-controls">
+            <button class="player-mini-btn" onclick="playPrevious()">⏮️</button>
+            <button class="player-mini-btn" id="playBtn" onclick="togglePlay()">▶️</button>
+            <button class="player-mini-btn" onclick="playNext()">⏭️</button>
+            <button class="player-mini-btn" onclick="toggleVolume()">🔊</button>
+        </div>
+    </div>
+
+    <script>
+        const SESSION_KEY = 'musicaa_session';
+        const FAVORITES_KEY = 'musicaa_favorites';
+        const SEARCH_FAVORITES_KEY = 'favorites';
+
+        // Base de données musicale
+        const musicDatabase = [
+            // Pop
+            { id: 1, title: 'Blinding Lights', artist: 'The Weeknd', duration: '3:20', genre: 'Pop', emoji: '🎧' },
+            { id: 2, title: 'Levitating', artist: 'Dua Lipa', duration: '3:23', genre: 'Pop', emoji: '✨' },
+            { id: 3, title: 'Heat Waves', artist: 'Glass Animals', duration: '3:59', genre: 'Pop', emoji: '🌊' },
+            { id: 4, title: 'Shape of You', artist: 'Ed Sheeran', duration: '3:53', genre: 'Pop', emoji: '💘' },
+            { id: 5, title: 'Say You Won\'t Let Go', artist: 'James Arthur', duration: '3:36', genre: 'Pop', emoji: '💕' },
+            { id: 6, title: 'Perfect', artist: 'Ed Sheeran', duration: '4:23', genre: 'Pop', emoji: '🎵' },
+            { id: 7, title: 'Someone You Loved', artist: 'Lewis Capaldi', duration: '3:02', genre: 'Pop', emoji: '💔' },
+            { id: 8, title: 'Anti-Hero', artist: 'Taylor Swift', duration: '3:31', genre: 'Pop', emoji: '🎤' },
+
+            // Rock
+            { id: 9, title: 'Wonderwall', artist: 'Oasis', duration: '4:18', genre: 'Rock', emoji: '🎸' },
+            { id: 10, title: 'Bohemian Rhapsody', artist: 'Queen', duration: '5:55', genre: 'Rock', emoji: '👑' },
+            { id: 11, title: 'Hotel California', artist: 'Eagles', duration: '6:30', genre: 'Rock', emoji: '🏨' },
+            { id: 12, title: 'Comfortably Numb', artist: 'Pink Floyd', duration: '6:23', genre: 'Rock', emoji: '☁️' },
+            { id: 13, title: 'Stairway to Heaven', artist: 'Led Zeppelin', duration: '8:02', genre: 'Rock', emoji: '🪜' },
+            { id: 14, title: 'Sweet Child O\' Mine', artist: 'Guns N\' Roses', duration: '5:56', genre: 'Rock', emoji: '👶' },
+            { id: 15, title: 'Imagine', artist: 'John Lennon', duration: '3:03', genre: 'Rock', emoji: '🌍' },
+            { id: 16, title: 'Hey Jude', artist: 'The Beatles', duration: '7:11', genre: 'Rock', emoji: '🎹' },
+
+            // Hip-Hop
+            { id: 17, title: 'Lose Yourself', artist: 'Eminem', duration: '5:26', genre: 'Hip-Hop', emoji: '🔥' },
+            { id: 18, title: 'In Da Club', artist: '50 Cent', duration: '3:36', genre: 'Hip-Hop', emoji: '🍾' },
+            { id: 19, title: 'God\'s Plan', artist: 'Drake', duration: '3:18', genre: 'Hip-Hop', emoji: '🙏' },
+            { id: 20, title: 'HUMBLE.', artist: 'Kendrick Lamar', duration: '2:57', genre: 'Hip-Hop', emoji: '🤐' },
+            { id: 21, title: 'Mo\' Money Mo\' Problems', artist: 'The Notorious B.I.G.', duration: '3:35', genre: 'Hip-Hop', emoji: '💰' },
+            { id: 22, title: 'Hotline Bling', artist: 'Drake', duration: '4:28', genre: 'Hip-Hop', emoji: '📞' },
+            { id: 23, title: 'Still D.R.E.', artist: 'Dr. Dre', duration: '4:34', genre: 'Hip-Hop', emoji: '😎' },
+            { id: 24, title: 'Hip Hop Hooray', artist: 'Naughty by Nature', duration: '3:39', genre: 'Hip-Hop', emoji: '🎤' },
+
+            // Jazz
+            { id: 25, title: 'Take Five', artist: 'Dave Brubeck', duration: '5:24', genre: 'Jazz', emoji: '🎷' },
+            { id: 26, title: 'Autumn Leaves', artist: 'Bill Evans', duration: '5:51', genre: 'Jazz', emoji: '🍂' },
+            { id: 27, title: 'All Blues', artist: 'Miles Davis', duration: '11:33', genre: 'Jazz', emoji: '🎺' },
+            { id: 28, title: 'So What', artist: 'Miles Davis', duration: '9:47', genre: 'Jazz', emoji: '❓' },
+            { id: 29, title: 'Round Midnight', artist: 'Thelonious Monk', duration: '5:50', genre: 'Jazz', emoji: '🌙' },
+            { id: 30, title: 'In a Sentimental Mood', artist: 'Duke Ellington', duration: '5:07', genre: 'Jazz', emoji: '💭' },
+            { id: 31, title: 'Moanin\'', artist: 'Art Blakey', duration: '5:55', genre: 'Jazz', emoji: '😭' },
+            { id: 32, title: 'Blue Rondo à la Turk', artist: 'Dave Brubeck', duration: '6:24', genre: 'Jazz', emoji: '🎵' },
+
+            // Classique
+            { id: 33, title: 'Clair de Lune', artist: 'Claude Debussy', duration: '4:39', genre: 'Classique', emoji: '🌙' },
+            { id: 34, title: 'Eine kleine Nachtmusik', artist: 'Mozart', duration: '5:21', genre: 'Classique', emoji: '🎻' },
+            { id: 35, title: 'Symphony No. 5', artist: 'Beethoven', duration: '7:20', genre: 'Classique', emoji: '🎼' },
+            { id: 36, title: 'The Four Seasons', artist: 'Vivaldi', duration: '9:50', genre: 'Classique', emoji: '🍁' },
+            { id: 37, title: 'Nocturne in E-flat major', artist: 'Chopin', duration: '4:25', genre: 'Classique', emoji: '🌟' },
+            { id: 38, title: 'Für Elise', artist: 'Beethoven', duration: '2:49', genre: 'Classique', emoji: '💝' },
+            { id: 39, title: 'Moonlight Sonata', artist: 'Beethoven', duration: '5:37', genre: 'Classique', emoji: '🌕' },
+            { id: 40, title: 'Swan Lake', artist: 'Tchaikovsky', duration: '5:22', genre: 'Classique', emoji: '🦢' },
+
+            // Électronique
+            { id: 41, title: 'Scary Monsters and Nice Sprites', artist: 'Skrillex', duration: '3:41', genre: 'Électronique', emoji: '👽' },
+            { id: 42, title: 'Wake Me Up', artist: 'Avicii', duration: '4:09', genre: 'Électronique', emoji: '⏰' },
+            { id: 43, title: 'Levels', artist: 'Avicii', duration: '3:02', genre: 'Électronique', emoji: '🔊' },
+            { id: 44, title: 'Animals', artist: 'Martin Garrix', duration: '4:55', genre: 'Électronique', emoji: '🦁' },
+            { id: 45, title: 'Titanium', artist: 'David Guetta ft. Sia', duration: '4:09', genre: 'Électronique', emoji: '💪' },
+            { id: 46, title: 'One Kiss', artist: 'Calvin Harris ft. Dua Lipa', duration: '3:31', genre: 'Électronique', emoji: '💋' },
+            { id: 47, title: 'Lean On', artist: 'Major Lazer ft. MØ', duration: '4:04', genre: 'Électronique', emoji: '🎧' },
+            { id: 48, title: 'Clarity', artist: 'Zedd ft. Foxes', duration: '3:33', genre: 'Électronique', emoji: '✨' }
+        ];
+
+        let currentUser = null;
+        let currentPage = 1;
+        let songsPerPage = 10;
+        let filteredSongs = [];
+        let currentFilter = 'all';
+        let isPlaying = false;
+        let currentSongId = null;
+        let favorites = [];
+
+        // Vérifier l'authentification
+        function checkAuth() {
+            const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            currentUser = session.user;
+            initFavorites();
+            loadUserInfo();
+        }
+
+        // Charger les favoris
+        function initFavorites() {
+            const key = `${FAVORITES_KEY}_${currentUser.id}`;
+            favorites = JSON.parse(localStorage.getItem(key) || '[]');
+        }
+
+        // Sauvegarder les favoris
+        function saveFavorites() {
+            const key = `${FAVORITES_KEY}_${currentUser.id}`;
+            localStorage.setItem(key, JSON.stringify(favorites));
+        }
+
+        // Charger les infos utilisateur
+        function loadUserInfo() {
+            const firstLetter = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = firstLetter;
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
+        }
+
+        // Afficher les chansons
+        function displaySongs() {
+            const container = document.getElementById('songsContainer');
+            const start = (currentPage - 1) * songsPerPage;
+            const end = start + songsPerPage;
+            const songs = filteredSongs.slice(start, end);
+
+            if (songs.length === 0) {
+                container.innerHTML = '<div class="no-results" style="grid-column: 1/-1;"><span>🎵</span><p>Aucune chanson trouvée</p></div>';
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = songs.map(song => `
+                <div class="song-item">
+                    <div class="song-cover">
+                        <span>${song.emoji}</span>
+                        <div class="play-overlay" onclick="playSong(${song.id})">
+                            <div class="play-icon">▶️</div>
+                        </div>
+                    </div>
+                    <div class="song-info">
+                        <div class="song-title">${song.title}</div>
+                        <div class="song-artist">${song.artist}</div>
+                        <div class="song-meta">
+                            <span class="song-duration">${song.duration}</span>
+                            <button class="favorite-btn ${favorites.includes(song.id) ? 'active' : ''}" onclick="toggleFavorite(${song.id}, event)">
+                                ${favorites.includes(song.id) ? '❤️' : '🤍'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            displayPagination();
+        }
+
+        // Pagination
+        function displayPagination() {
+            const totalPages = Math.ceil(filteredSongs.length / songsPerPage);
+            const pagination = document.getElementById('pagination');
+
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button ${i === currentPage ? 'class="active"' : ''} onclick="goToPage(${i})">${i}</button>`;
+            }
+            pagination.innerHTML = html;
+        }
+
+        // Aller à une page
+        function goToPage(page) {
+            currentPage = page;
+            displaySongs();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Filtrer par genre
+        function filterByGenre(genre) {
+            currentFilter = genre;
+            currentPage = 1;
+
+            // Mettre à jour les boutons
+            document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (genre === 'all') {
+                filteredSongs = musicDatabase;
+            } else {
+                filteredSongs = musicDatabase.filter(song => song.genre === genre);
+            }
+            displaySongs();
+        }
+
+        // Rechercher les chansons
+        function searchSongs() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            currentPage = 1;
+
+            if (query === '') {
+                if (currentFilter === 'all') {
+                    filteredSongs = musicDatabase;
+                } else {
+                    filteredSongs = musicDatabase.filter(song => song.genre === currentFilter);
+                }
+            } else {
+                const baseList = currentFilter === 'all' ? musicDatabase : musicDatabase.filter(song => song.genre === currentFilter);
+                filteredSongs = baseList.filter(song =>
+                    song.title.toLowerCase().includes(query) ||
+                    song.artist.toLowerCase().includes(query)
+                );
+            }
+            displaySongs();
+        }
+
+        // Ajouter/retirer des favoris
+        function toggleFavorite(songId, event) {
+            event.stopPropagation();
+            const index = favorites.indexOf(songId);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(songId);
+            }
+            saveFavorites();
+            displaySongs();
+        }
+
+        // Jouer une chanson
+        function playSong(songId) {
+            currentSongId = songId;
+            const song = musicDatabase.find(s => s.id === songId);
+            document.getElementById('playerMiniTitle').textContent = song.title;
+            document.getElementById('playerMiniArtist').textContent = song.artist;
+            document.getElementById('playerMini').classList.add('active');
+            isPlaying = true;
+            document.getElementById('playBtn').textContent = '⏸️';
+        }
+
+        // Basculer la lecture
+        function togglePlay() {
+            if (!currentSongId) return;
+            isPlaying = !isPlaying;
+            document.getElementById('playBtn').textContent = isPlaying ? '⏸️' : '▶️';
+        }
+
+        // Chanson suivante
+        function playNext() {
+            if (!currentSongId) {
+                playSong(1);
+                return;
+            }
+            const currentIndex = filteredSongs.findIndex(s => s.id === currentSongId);
+            if (currentIndex < filteredSongs.length - 1) {
+                playSong(filteredSongs[currentIndex + 1].id);
+            }
+        }
+
+        // Chanson précédente
+        function playPrevious() {
+            if (!currentSongId) return;
+            const currentIndex = filteredSongs.findIndex(s => s.id === currentSongId);
+            if (currentIndex > 0) {
+                playSong(filteredSongs[currentIndex - 1].id);
+            }
+        }
+
+        // Basculer le volume
+        function toggleVolume() {
+            alert('Volume: 70%');
+        }
+
+        // Définir l'onglet actif
+        function setActiveTab(tab) {
+            if (tab === 'all') {
+                filterByGenre('all');
+            } else if (tab === 'favorites') {
+                currentPage = 1;
+                filteredSongs = musicDatabase.filter(song => favorites.includes(song.id));
+                document.querySelectorAll('.genre-btn').forEach(btn => btn.classList.remove('active'));
+                displaySongs();
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+                localStorage.removeItem(SESSION_KEY);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialiser
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            filteredSongs = musicDatabase;
+            displaySongs();
+        });
+    </script>
+</body>
+</html>
