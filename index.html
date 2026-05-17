@@ -20,7 +20,7 @@
                 <li><a href="#playlists">Playlists</a></li>
                 <li><a href="#apropos">À Propos</a></li>
             </ul>
-            <button class="btn-connexion" onclick="showLoginModal()">Se Connecter</button>
+            <button class="btn-connexion" onclick="window.location.href='login.html'">Se Connecter</button>
         </div>
     </nav>
 
@@ -31,7 +31,7 @@
             <h2>La Musique, Gratuite pour Tous</h2>
             <p>Écoutez vos artistes préférés sans payer, sans publicités. La musique est un droit, pas un luxe.</p>
             <div class="hero-buttons">
-                <button class="btn-primary" onclick="showLoginModal()">Commencer Gratuitement</button>
+                <button class="btn-primary" onclick="window.location.href='login.html'">Commencer Gratuitement</button>
                 <button class="btn-secondary" onclick="document.getElementById('playlists').scrollIntoView({behavior: 'smooth'})">Découvrir</button>
             </div>
         </div>
@@ -83,33 +83,6 @@
         </div>
     </section>
 
-    <!-- Lecteur Musicaa -->
-    <section class="player-section">
-        <h2>Lecteur Musicaa</h2>
-        <div class="player">
-            <div class="player-album">
-                <div class="album-art"></div>
-            </div>
-            <div class="player-info">
-                <h3 class="song-title">Chanson Aléatoire</h3>
-                <p class="artist-name">Artiste Inconnu</p>
-            </div>
-            <div class="player-controls">
-                <button class="control-btn">⏮️</button>
-                <button class="control-btn play-btn">▶️</button>
-                <button class="control-btn">⏭️</button>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-                <input type="range" min="0" max="100" value="0" class="progress-input">
-            </div>
-            <div class="volume-control">
-                <span>🔊</span>
-                <input type="range" min="0" max="100" value="70" class="volume-slider">
-            </div>
-        </div>
-    </section>
-
     <!-- Musiques Populaires -->
     <section id="musiques" class="popular-songs">
         <h2>Musiques Populaires</h2>
@@ -118,37 +91,37 @@
                 <div class="song-cover"></div>
                 <h4>Chanson Hit #1</h4>
                 <p>Artiste Principal</p>
-                <button class="btn-play">▶️ Écouter</button>
+                <button class="btn-play" onclick="window.location.href='login.html'">▶️ Écouter</button>
             </div>
             <div class="song-card">
                 <div class="song-cover"></div>
                 <h4>Chanson Hit #2</h4>
                 <p>Artiste Principal</p>
-                <button class="btn-play">▶️ Écouter</button>
+                <button class="btn-play" onclick="window.location.href='login.html'">▶️ Écouter</button>
             </div>
             <div class="song-card">
                 <div class="song-cover"></div>
                 <h4>Chanson Hit #3</h4>
                 <p>Artiste Principal</p>
-                <button class="btn-play">▶️ Écouter</button>
+                <button class="btn-play" onclick="window.location.href='login.html'">▶️ Écouter</button>
             </div>
             <div class="song-card">
                 <div class="song-cover"></div>
                 <h4>Chanson Hit #4</h4>
                 <p>Artiste Principal</p>
-                <button class="btn-play">▶️ Écouter</button>
+                <button class="btn-play" onclick="window.location.href='login.html'">▶️ Écouter</button>
             </div>
             <div class="song-card">
                 <div class="song-cover"></div>
                 <h4>Chanson Hit #5</h4>
                 <p>Artiste Principal</p>
-                <button class="btn-play">▶️ Écouter</button>
+                <button class="btn-play" onclick="window.location.href='login.html'">▶️ Écouter</button>
             </div>
             <div class="song-card">
                 <div class="song-cover"></div>
                 <h4>Chanson Hit #6</h4>
                 <p>Artiste Principal</p>
-                <button class="btn-play">▶️ Écouter</button>
+                <button class="btn-play" onclick="window.location.href='login.html'">▶️ Écouter</button>
             </div>
         </div>
     </section>
@@ -230,20 +203,6 @@
             <p>&copy; 2026 Musicaa. Tous droits réservés. Gratuit & Sans Pub.</p>
         </div>
     </footer>
-
-    <!-- Modal de Connexion -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
-            <h2>Rejoignez Musicaa</h2>
-            <form onsubmit="handleLogin(event)">
-                <input type="email" placeholder="Votre email" required>
-                <input type="password" placeholder="Mot de passe" required>
-                <button type="submit" class="btn-primary">Se Connecter Gratuitement</button>
-            </form>
-            <p class="modal-footer">Pas encore inscrit? <a href="#">Créer un compte gratuit</a></p>
-        </div>
-    </div>
 
     <script src="script.js"></script>
 </body>
