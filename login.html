@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Musicaa</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(29, 185, 84, 0.2), rgba(29, 185, 84, 0.1));
+            padding: 2rem;
+        }
+
+        .auth-box {
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(29, 185, 84, 0.2);
+            animation: slideDown 0.5s ease;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .auth-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--border-color);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 0.7rem;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(29, 185, 84, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .password-strength {
+            display: none;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: black;
+            border: none;
+            border-radius: 0.7rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(29, 185, 84, 0.4);
+        }
+
+        .btn-auth:active {
+            transform: translateY(0);
+        }
+
+        .form-divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .form-divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .form-divider::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 0.9rem;
+            background: var(--border-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.7rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .social-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(29, 185, 84, 0.1);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox label {
+            margin: 0;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .forgot-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid #ff3b30;
+            color: #ff3b30;
+            padding: 1rem;
+            border-radius: 0.7rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            display: none;
+            background: rgba(29, 185, 84, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 1rem;
+            border-radius: 0.7rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-box {
+                padding: 2rem;
+            }
+
+            .auth-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation minimale -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">♪</span>
+                <span class="logo-text">Musicaa</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <!-- Header -->
+            <div class="auth-header">
+                <div class="logo">♪</div>
+                <h1>Musicaa</h1>
+                <p>Musique gratuite et sans pub</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Connexion</button>
+                <button class="auth-tab" onclick="switchTab('signup')">Inscription</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="error-message" id="loginError"></div>
+                <div class="success-message" id="loginSuccess"></div>
+
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="loginEmail" 
+                        name="email" 
+                        placeholder="votre@email.com" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="loginPassword" 
+                        name="password" 
+                        placeholder="Votre mot de passe" 
+                        required
+                    >
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="checkbox">
+                        <input type="checkbox" name="remember">
+                        <span>Se souvenir de moi</span>
+                    </label>
+                    <a href="#" class="forgot-link">Mot de passe oublié?</a>
+                </div>
+
+                <button type="submit" class="btn-auth">Se Connecter</button>
+
+                <div class="form-divider">OU</div>
+
+                <div class="social-buttons">
+                    <button type="button" class="social-btn" onclick="loginWithGoogle()">Google</button>
+                    <button type="button" class="social-btn" onclick="loginWithGithub()">GitHub</button>
+                    <button type="button" class="social-btn" onclick="loginWithApple()">Apple</button>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
+                <div class="error-message" id="signupError"></div>
+                <div class="success-message" id="signupSuccess"></div>
+
+                <div class="form-group">
+                    <label for="signupName">Nom complet</label>
+                    <input 
+                        type="text" 
+                        id="signupName" 
+                        name="name" 
+                        placeholder="Jean Dupont" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="signupEmail" 
+                        name="email" 
+                        placeholder="votre@email.com" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signupPassword">Mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="signupPassword" 
+                        name="password" 
+                        placeholder="Au moins 8 caractères" 
+                        required
+                        oninput="checkPasswordStrength(this.value)"
+                    >
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="password-strength-bar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirmer le mot de passe</label>
+                    <input 
+                        type="password" 
+                        id="signupConfirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Confirmez votre mot de passe" 
+                        required
+                    >
+                </div>
+
+                <div class="checkbox" style="margin-bottom: 1.5rem;">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">J'accepte les conditions d'utilisation</label>
+                </div>
+
+                <button type="submit" class="btn-auth">S'inscrire Gratuitement</button>
+
+                <div class="form-divider">OU</div>
+
+                <div class="social-buttons">
+                    <button type="button" class="social-btn" onclick="signupWithGoogle()">Google</button>
+                    <button type="button" class="social-btn" onclick="signupWithGithub()">GitHub</button>
+                    <button type="button" class="social-btn" onclick="signupWithApple()">Apple</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Stockage des utilisateurs (en localStorage pour cette démo)
+        const STORAGE_KEY = 'musicaa_users';
+        const SESSION_KEY = 'musicaa_session';
+
+        // Initialiser le stockage
+        function initStorage() {
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+            }
+        }
+
+        // Obtenir les utilisateurs
+        function getUsers() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        }
+
+        // Sauvegarder les utilisateurs
+        function saveUsers(users) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+        }
+
+        // Créer une session
+        function createSession(user) {
+            const session = {
+                id: Math.random().toString(36).substr(2, 9),
+                user: user,
+                loginTime: new Date().toISOString(),
+                expiresIn: 24 * 60 * 60 * 1000 // 24 heures
+            };
+            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+            return session;
+        }
+
+        // Obtenir la session actuelle
+        function getCurrentSession() {
+            const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+            if (!session) return null;
+            
+            const loginTime = new Date(session.loginTime).getTime();
+            const now = new Date().getTime();
+            
+            if (now - loginTime > session.expiresIn) {
+                localStorage.removeItem(SESSION_KEY);
+                return null;
+            }
+            return session;
+        }
+
+        // Basculer entre Connexion et Inscription
+        function switchTab(tab) {
+            // Changer les onglets
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Changer les formulaires
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab === 'login' ? 'loginForm' : 'signupForm').classList.add('active');
+
+            // Réinitialiser les messages d'erreur
+            document.querySelectorAll('.error-message, .success-message').forEach(m => {
+                m.style.display = 'none';
+                m.textContent = '';
+            });
+        }
+
+        // Vérifier la force du mot de passe
+        function checkPasswordStrength(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+            const bar = strengthDiv.querySelector('.password-strength-bar');
+            strengthDiv.style.display = 'block';
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            const colors = ['#ff3b30', '#ff9500', '#1DB954'];
+            const widths = ['33%', '66%', '100%'];
+
+            if (strength === 0) {
+                bar.style.display = 'none';
+            } else {
+                bar.style.display = 'block';
+                bar.style.width = widths[Math.min(strength - 1, 2)];
+                bar.style.backgroundColor = colors[Math.min(strength - 1, 2)];
+            }
+        }
+
+        // Gestion de la connexion
+        function handleLogin(event) {
+            event.preventDefault();
+            initStorage();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            const successDiv = document.getElementById('loginSuccess');
+
+            // Réinitialiser les messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            // Valider
+            if (!email || !password) {
+                errorDiv.textContent = '❌ Veuillez remplir tous les champs';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Chercher l'utilisateur
+            const users = getUsers();
+            const user = users.find(u => u.email === email);
+
+            if (!user) {
+                errorDiv.textContent = '❌ Email ou mot de passe incorrect';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (user.password !== password) {
+                errorDiv.textContent = '❌ Email ou mot de passe incorrect';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Connexion réussie
+            createSession(user);
+            successDiv.textContent = '✅ Connexion réussie! Redirection...';
+            successDiv.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = 'library.html';
+            }, 1500);
+        }
+
+        // Gestion de l'inscription
+        function handleSignup(event) {
+            event.preventDefault();
+            initStorage();
+
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const errorDiv = document.getElementById('signupError');
+            const successDiv = document.getElementById('signupSuccess');
+
+            // Réinitialiser les messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            // Valider
+            if (!name || !email || !password || !confirmPassword) {
+                errorDiv.textContent = '❌ Veuillez remplir tous les champs';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (password.length < 8) {
+                errorDiv.textContent = '❌ Le mot de passe doit contenir au moins 8 caractères';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                errorDiv.textContent = '❌ Les mots de passe ne correspondent pas';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Vérifier si l'email existe déjà
+            const users = getUsers();
+            if (users.some(u => u.email === email)) {
+                errorDiv.textContent = '❌ Cet email est déjà utilisé';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Créer le nouvel utilisateur
+            const newUser = {
+                id: Math.random().toString(36).substr(2, 9),
+                name: name,
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString(),
+                favorites: [],
+                playlists: []
+            };
+
+            users.push(newUser);
+            saveUsers(users);
+
+            // Créer la session
+            createSession(newUser);
+            successDiv.textContent = '✅ Inscription réussie! Bienvenue sur Musicaa! 🎵';
+            successDiv.style.display = 'block';
+
+            setTimeout(() => {
+                window.location.href = 'library.html';
+            }, 1500);
+        }
+
+        // Fonctions de connexion sociale (simulées)
+        function loginWithGoogle() {
+            alert('🔄 Connexion Google en développement...');
+        }
+
+        function loginWithGithub() {
+            alert('🔄 Connexion GitHub en développement...');
+        }
+
+        function loginWithApple() {
+            alert('🔄 Connexion Apple en développement...');
+        }
+
+        function signupWithGoogle() {
+            alert('🔄 Inscription Google en développement...');
+        }
+
+        function signupWithGithub() {
+            alert('🔄 Inscription GitHub en développement...');
+        }
+
+        function signupWithApple() {
+            alert('🔄 Inscription Apple en développement...');
+        }
+
+        // Rediriger si déjà connecté
+        window.addEventListener('DOMContentLoaded', () => {
+            initStorage();
+            if (getCurrentSession()) {
+                window.location.href = 'library.html';
+            }
+        });
+    </script>
+</body>
+</html>
